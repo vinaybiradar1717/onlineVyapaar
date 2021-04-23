@@ -1,17 +1,20 @@
-
+const User = require("../models/user")
+const {errorHandler} = require("../helpers/dbErrorHandler")
 
 exports.signup = (req, res) => {
-    res.json({message: "hello there"});
-    // console.log("req.body", req.body)
-    // const user = new User(req.body)
-    // user.save((err, user) => {
-    //     if(err) {
-    //         return res.status(400).json({
-    //             error
-    //         });
-    //     }
-    //     res.json({
-    //         user
-    //     })
-    // })
+    // res.json({message: "hello world there"});
+    console.log("req.body", req.body)
+    const user = new User(req.body)
+    user.save((err, user) => {
+        if(err) {
+            return res.status(400).json({
+                err: errorHandler(err)
+            });
+        }
+        user.salt = undefined;
+        user.hashed_password = undefined;
+        res.json({
+            user
+        })
+    })
 };
