@@ -10,6 +10,7 @@ router.get("/secret/:userId", requireSignin, isAuth, isAdmin, (req, res) => {
     })
 });
 
+// act as a middleware
 router.param("userId", userById)
 
 
