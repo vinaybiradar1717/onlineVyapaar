@@ -263,3 +263,15 @@ exports.listBySearch = (req, res) => {
             });
         });
 };
+
+
+// SHOW PHOTO WRT PRODUCT
+// ===============================================
+
+exports.photo = (req, res, next) => {
+    if(req.product.photo.data) {
+        res.set("Content-Type", req.product.photo.contentType);  // takes in the data, like: jpg, png etc
+        return res.send(req.product.photo.data);
+    }
+    next();
+}
