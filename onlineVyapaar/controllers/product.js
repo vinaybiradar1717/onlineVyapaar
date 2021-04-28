@@ -143,3 +143,31 @@ exports.update = (req, res) => {
 
     })
 }
+
+
+// RECOMMEND PRODUCTS BASED ON SELL/ARRIVAL
+// by sell = /products?sortBy=sold&order=desc&limit=4
+// by arrival = /products?createdAt=sold&order=desc&limit=4
+// if no params are sent then all products are returned
+// ======================
+
+exports.list = (req, res) => {
+    let order = req.query.order ? req.query.order : "asc"
+    let sortBy = req.query.sortBy ? req.query.sortBy : "_id"
+    let limit = req.query.limit ? parseInt(req.query.limit) : 5
+
+    Product.find()
+        .select("-photo")
+        .populate("category")  // in model we have used category in productSchema
+        .sort([[sortBy, order]])
+        .limit(limit)
+        .exec((err, products) => {
+            if (err) {
+                return res.status(400).json({
+                    error: "Producs not found!"
+                });
+            }
+            res.send(products);
+        })
+}
+
