@@ -152,9 +152,9 @@ exports.update = (req, res) => {
 // ======================
 
 exports.list = (req, res) => {
-    let order = req.query.order ? req.query.order : "asc"
-    let sortBy = req.query.sortBy ? req.query.sortBy : "_id"
-    let limit = req.query.limit ? parseInt(req.query.limit) : 5
+    let order = req.query.order ? req.query.order : "asc";
+    let sortBy = req.query.sortBy ? req.query.sortBy : "_id";
+    let limit = req.query.limit ? parseInt(req.query.limit) : 5;
 
     Product.find()
         .select("-photo")
@@ -167,7 +167,46 @@ exports.list = (req, res) => {
                     error: "Producs not found!"
                 });
             }
-            res.send(products);
+            res.json(products);
         })
 }
 
+
+// SHOW RELATED PRODUCTS METHOD
+// (other products which have same category will be returned)
+// ============================
+
+exports.listRelated = (req, res) => {
+    let limit = req.query.limit ? parseInt(req.query.limit) : 5;
+    Product.find({
+            _id: {$ne: req.product}, 
+            category: req.product.category
+        })
+        .limit(limit)
+        .populate("category", "_id name")
+        .exec((err, products) => {
+            if (err) {
+                return res.status(400).json({
+                    error: "producs not found!"
+                });
+            }
+            res.json(products);
+        });
+}
+
+
+// SHOW RELATED CATEGORIES WRT PRODUCT
+// categories related to products will be returned
+// ===============================================
+
+
+exports.listCategories = (req, res) => {
+    Product.distinct("category", {}, (err, categories) => {  // second field is for query
+        if (err) {
+            return res.status(400).json({
+                error: "categories not found!"
+            });
+        }
+        res.json(categories);
+    });
+}
